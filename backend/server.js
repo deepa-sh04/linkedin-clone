@@ -8,6 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
 app.get('/', (req, res) => {
   res.json({ 
     message: 'LinkedIn Clone Backend is running!',
@@ -18,29 +19,31 @@ app.get('/', (req, res) => {
 
 
 app.get('/health', (req, res) => {
-  res.status(200).json({ message: 'Server is healthy' });
+  res.status(200).json({ 
+    message: 'Server is healthy',
+    database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+    timestamp: new Date().toISOString()
+  });
 });
 
 console.log('Attempting to connect to MongoDB...');
 console.log('MongoDB URI:', process.env.MONGODB_URI ? 'Present' : 'Missing');
 
-// Improved MongoDB connection
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+
+mongoose.connect(process.env.MONGODB_URI)
 .then(() => {
-  console.log('✅ MongoDB connected successfully');
+  console.log('MongoDB connected successfully');
 })
 .catch((error) => {
-  console.error('❌ MongoDB connection failed:', error);
+  console.error(' MongoDB connection failed:', error);
   process.exit(1);
 });
+
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/posts', require('./routes/posts'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(` Server running on port ${PORT}`);
 });
