@@ -4,6 +4,20 @@ const auth = require('../middleware/auth');
 
 const router = express.Router();
 
+
+router.get('/', auth, async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .populate('author', 'name')
+      .sort({ createdAt: -1 });
+    
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 router.get('/', (req, res) => {
   res.json({ 
     message: 'Posts API is working!',
@@ -28,18 +42,6 @@ router.post('/', auth, async (req, res) => {
 
     await post.populate('author', 'name');
     res.status(201).json(post);
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-router.get('/', auth, async (req, res) => {
-  try {
-    const posts = await Post.find()
-      .populate('author', 'name')
-      .sort({ createdAt: -1 });
-    
-    res.json(posts);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
