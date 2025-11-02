@@ -5,6 +5,17 @@ const auth = require('../middleware/auth');
 
 const router = express.Router();
 
+router.get('/', (req, res) => {
+  res.json({ 
+    message: 'Auth API is working!',
+    endpoints: [
+      'POST /api/auth/signup',
+      'POST /api/auth/login', 
+      'GET /api/auth/me'
+    ]
+  });
+});
+
 router.post('/signup', async (req, res) => {
   try {
     const { name, email, password } = req.body;
